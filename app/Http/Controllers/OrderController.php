@@ -7,6 +7,7 @@ use App\Http\Resources\OrderResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Order;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -14,9 +15,9 @@ class OrderController extends Controller
 
     public function index()
     {
-        $orders = Order::select('id', 'user_id', 'total_price')->get();
+        $orders = Order::select('id', 'user_id', 'total_price')->paginate($this->pagination); 
 
-        return ApiResponse::success(OrderResource::collection($orders), 'get orders successfully', 200);
+        return ApiResponse::success($orders, 'get orders successfully', 200);  //data.data
     }
 
     public function store(OrderRequest $req)
@@ -42,5 +43,24 @@ class OrderController extends Controller
         });
 
         return ApiResponse::success(new OrderResource($order), 'order created successfully', 201);
+    }
+
+    public function expensive()
+    {
+        $orders = Order::expensive()->with('products')->paginate($this->pagination);
+        return ApiResponse::success($orders, 'get expensive orders', 200); //data.data
+    }
+
+    public function trashOrders()
+    {
+        $orders = Order::onlyTrashed()->paginate($this->pagination);
+        return ApiResponse::success($orders, 'get trashed orders successfully', 200); //data.data
+    }
+
+    public function destroy($id)
+    {
+        $order =  Order::findOrFail($id);
+        $order->delete();
+        return ApiResponse::success(null,'deleted successfully',200);
     }
 }

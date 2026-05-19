@@ -11,8 +11,8 @@ class UserController extends Controller
 {
     function index()
     {
-        $users = User::select('id', 'name', 'email')->get();
-        return ApiResponse::success(UserResource::collection($users), 'get all users successfully', 200);
+        $users = User::select('id', 'name', 'email')->paginate($this->pagination);
+        return ApiResponse::success($users, 'get all users successfully', 200);  //data.data
     }
 
     function show($id)

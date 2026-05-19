@@ -12,9 +12,9 @@ class ProductController extends Controller
 
     public function index()
     {
-        $products = Product::select('id', 'name', 'price')->get();
+        $products = Product::select('id', 'name', 'price')->paginate($this->pagination); 
 
-        return ApiResponse::success(ProductResource::collection($products), 'get successfully', 200);
+        return ApiResponse::success($products, 'get successfully', 200); //data.data
     }
 
 
