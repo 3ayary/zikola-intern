@@ -13,4 +13,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Order::class, 'order_product');
     }
+
+    function reviews()
+    {
+        return $this->morphMany(Review::class, 'reviewable');
+    }
 }

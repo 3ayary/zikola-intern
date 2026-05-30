@@ -8,14 +8,18 @@ use App\Http\Responses\ApiResponse;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class OrderController extends Controller
 {
+    use AuthorizesRequests;
+
 
     public function index()
     {
-        $orders = Order::select('id', 'user_id', 'total_price')->paginate($this->pagination); 
+        $orders = Order::select('id', 'user_id', 'total_price')->paginate($this->pagination);
 
         return ApiResponse::success($orders, 'get orders successfully', 200);  //data.data
     }
@@ -31,9 +35,9 @@ class OrderController extends Controller
             $totalPrice += $product->price * $item['quantity'];
         }
 
-        $order = DB::transaction(function () use ($req, $totalPrice, $attachData) {
+        $order = DB::transaction(function () use ($totalPrice, $attachData) {
             $order = Order::create([
-                'user_id'     => $req->user_id,
+                'user_id'     => Auth::id(),
                 'total_price' => $totalPrice,
             ]);
 
@@ -60,7 +64,8 @@ class OrderController extends Controller
     public function destroy($id)
     {
         $order =  Order::findOrFail($id);
+        $this->authorize('delete', $order);
         $order->delete();
-        return ApiResponse::success(null,'deleted successfully',200);
+        return ApiResponse::success(null, 'deleted successfully', 200);
     }
 }
