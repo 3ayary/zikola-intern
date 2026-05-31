@@ -34,4 +34,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+
+    function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
 }

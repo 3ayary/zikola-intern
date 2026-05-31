@@ -6,6 +6,7 @@ use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -15,9 +16,9 @@ class UserController extends Controller
         return ApiResponse::success($users, 'get all users successfully', 200);  //data.data
     }
 
-    function show($id)
+    function show()
     {
-        $user = User::findOrFail($id);
+        $user = Auth::user()->load('profile');
         return ApiResponse::success(new UserResource($user), 'get user successfully', 200);
     }
 
