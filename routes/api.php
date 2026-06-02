@@ -18,6 +18,7 @@ Route::controller(OrderController::class)->prefix('order')->middleware('auth:san
 
 Route::controller(ProductController::class)->prefix('products')->group(function () {
     Route::get('/', 'index');
+    Route::get('/{id}', 'show');
     Route::post('/', 'store')->middleware(['auth:sanctum', 'IsAdmin']);
     Route::delete('/{id}', 'destroy')->middleware(['auth:sanctum', 'IsAdmin']);
     Route::put('/{id}', 'update')->middleware(['auth:sanctum', 'IsAdmin']);

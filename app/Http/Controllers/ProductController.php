@@ -26,7 +26,12 @@ class ProductController extends Controller
         return ApiResponse::success(new ProductResource($product), 'created successfully', 201);
     }
 
+    public function show($id)
+    {
+        $product = Product::findOrFail($id)->load('reviews');
 
+        return ApiResponse::success(new ProductResource($product), 'get successfully', 200);
+    }
 
 
     public function update(ProductRequest $req, $id)
