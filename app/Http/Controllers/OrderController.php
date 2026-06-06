@@ -64,8 +64,7 @@ class OrderController extends Controller
 
         $order = Order::findOrFail($id);
         $order->update(['status' => $req->status]);
-        
-        $order->user->notify(new OrderStatusChanged($order));
+
         return ApiResponse::success(new OrderResource($order), 'status updated successfully');
     }
 }
