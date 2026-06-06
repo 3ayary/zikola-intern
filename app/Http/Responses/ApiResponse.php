@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Responses;
 
 class ApiResponse
@@ -8,6 +9,12 @@ class ApiResponse
         return response()->json([
             'message' => $message,
             'data'    => $data,
+        ], $status);
+    }
+    public static function error(string $message = 'error', int $status = 400)
+    {
+        return response()->json([
+            'message' => $message,
         ], $status);
     }
 }

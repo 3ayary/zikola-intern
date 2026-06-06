@@ -6,46 +6,31 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Http\Responses\ApiResponse;
 use App\Models\Order;
-use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Services\OrderService;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class OrderController extends Controller
 {
     use AuthorizesRequests;
 
+    protected OrderService $orderService;
+
+    public  function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
 
     public function index()
     {
-        $orders = Order::select('id', 'user_id', 'total_price')->paginate($this->pagination);
+        $orders = $this->orderService->getOrdersList($this->pagination);
 
         return ApiResponse::success($orders, 'get orders successfully', 200);  //data.data
     }
 
     public function store(OrderRequest $req)
     {
-        $totalPrice = 0;
-        $attachData = [];
-
-        foreach ($req->products as $item) {
-            $product = Product::findOrFail($item['product_id']);
-            $attachData[$product->id] = ['quantity' => $item['quantity']];
-            $totalPrice += $product->price * $item['quantity'];
-        }
-
-        $order = DB::transaction(function () use ($totalPrice, $attachData) {
-            $order = Order::create([
-                'user_id'     => Auth::id(),
-                'total_price' => $totalPrice,
-            ]);
-
-            $order->products()->attach($attachData);
-
-            return $order;
-        });
-
+        $order = $this->orderService->createOrder($req->products);
         return ApiResponse::success(new OrderResource($order), 'order created successfully', 201);
     }
 

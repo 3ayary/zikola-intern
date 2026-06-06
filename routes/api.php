@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(OrderController::class)->prefix('order')->middleware('auth:sanctum')->group(function () {
     Route::get('/', 'index')->middleware('IsAdmin');
-    Route::post('/', 'store');
+    Route::post('/', 'store')->middleware('verified');
     Route::get('/expensive', 'expensive')->middleware('IsAdmin');
     Route::get('/trash', 'trashOrders')->middleware('IsAdmin');
-    Route::delete('/{id}', 'destroy');  //admin or owner
+    Route::delete('/{id}', 'destroy')->middleware('verified');;  //admin or owner
 });
 
 Route::controller(ProductController::class)->prefix('products')->group(function () {
@@ -32,17 +32,20 @@ Route::controller(UserController::class)->prefix('user')->middleware(['auth:sanc
     Route::put('/{id}', 'update');
 });
 
-Route::controller(ReviewController::class)->prefix('products/{id}/reviews')->group(function () {
-    Route::post('/', 'store')->middleware('auth:sanctum');
+Route::controller(ReviewController::class)->prefix('products/{id}/reviews')->middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::post('/', 'store');
 });
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('/login', 'login');
     Route::post('/register', 'register');
     Route::post('/logout', 'logout')->middleware('auth:sanctum');
+    Route::post('/verify-email', 'verifyEmail')->middleware('auth:sanctum');
+    Route::post('/forgot-password', 'forgotPassword');
+    Route::post('/reset-password', 'resetPassword');
 });
 
-Route::controller(ProfileController::class)->prefix('profile')->middleware('auth:sanctum')->group(function () {
+Route::controller(ProfileController::class)->prefix('profile')->middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/', 'store');
     Route::post('/update', 'update');
     Route::delete('/', 'destroy');

@@ -2,17 +2,19 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidRating;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return true;
+        return Auth::check() && Auth::user()->role === 'user';
     }
 
     /**
@@ -23,8 +25,18 @@ class ReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rating'  => 'required|integer|min:1|max:5',
+            'rating'  => ['required', new ValidRating],
             'comment' => 'nullable|string|max:500',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'rating.required' => 'please add rating',
+            'rating.min'      => 'rate should be > 1',
+            'rating.max'      => 'rate should be < 5',
+            'comment.max'     => 'comment max length is 500',
         ];
     }
 }

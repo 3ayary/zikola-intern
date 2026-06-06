@@ -19,6 +19,8 @@ return new class extends Migration
             $table->enum("role", ['admin', 'user'])->default('user    ');
             $table->string('password');
             $table->rememberToken();
+            $table->string('otp')->nullable();
+            $table->timestamp('otp_expires_at')->nullable();
             $table->timestamps();
         });
 

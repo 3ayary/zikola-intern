@@ -6,13 +6,17 @@ use App\Http\Responses\ApiResponse;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
 
-    public function index()
+    public function index(Request $req)
     {
-        $products = Product::select('id', 'name', 'price')->paginate($this->pagination); 
+        
+        $products = Product::select('id', 'name', 'price')->when($req->search,function ($query) use ($req){
+            $query->where('name','like', '%' .$req->search . '%' );
+        })->paginate($this->pagination); 
 
         return ApiResponse::success($products, 'get successfully', 200); //data.data
     }
@@ -28,7 +32,7 @@ class ProductController extends Controller
 
     public function show($id)
     {
-        $product = Product::findOrFail($id)->load('reviews');
+        $product = Product::with('reviews')->findOrFail($id);
 
         return ApiResponse::success(new ProductResource($product), 'get successfully', 200);
     }

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class IsAdmin
+class EmailIsVerified
 {
     /**
      * Handle an incoming request.
@@ -17,8 +17,8 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role !== 'admin') {
-            return ApiResponse::error('unauthorized', 403);
+        if (!Auth::user()->email_verified_at) {
+            return ApiResponse::error('Please verify your email first', 403);
         }
         return $next($request);
     }
