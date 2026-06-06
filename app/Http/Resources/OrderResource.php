@@ -18,6 +18,7 @@ class OrderResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'price' => $this->formatted_price,
+            'status' => $this->status,
             'products' => ProductResource::collection($this->whenLoaded('products'))
         ];
     }

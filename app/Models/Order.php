@@ -10,7 +10,7 @@ class Order extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['user_id', 'total_price'];
+    protected $fillable = ['user_id', 'total_price', 'status'];
     protected $casts = ['total_price' => 'decimal:2'];
 
     function user()

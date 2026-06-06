@@ -14,6 +14,7 @@ Route::controller(OrderController::class)->prefix('order')->middleware('auth:san
     Route::get('/expensive', 'expensive')->middleware('IsAdmin');
     Route::get('/trash', 'trashOrders')->middleware('IsAdmin');
     Route::delete('/{id}', 'destroy')->middleware('verified');;  //admin or owner
+    Route::put('/{id}/status', 'updateStatus')->middleware('IsAdmin');
 });
 
 Route::controller(ProductController::class)->prefix('products')->group(function () {
