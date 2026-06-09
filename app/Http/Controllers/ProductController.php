@@ -13,10 +13,10 @@ class ProductController extends Controller
 
     public function index(Request $req)
     {
-        
-        $products = Product::select('id', 'name', 'price')->when($req->search,function ($query) use ($req){
-            $query->where('name','like', '%' .$req->search . '%' );
-        })->paginate($this->pagination); 
+
+        $products = Product::select('id', 'name', 'price')->when($req->search, function ($query) use ($req) {
+            $query->where('name', 'like', '%' . $req->search . '%');
+        })->paginate($this->pagination);
 
         return ApiResponse::success($products, 'get successfully', 200); //data.data
     }
@@ -49,8 +49,10 @@ class ProductController extends Controller
     public function destroy($id)
     {
 
-        Product::destroy($id);
-
+        $deleted =  Product::destroy($id);
+        if (!$deleted) {
+            return ApiResponse::error('product not found', 404);
+        }
         return ApiResponse::success(null, 'deleted successfully', 200);
     }
 }

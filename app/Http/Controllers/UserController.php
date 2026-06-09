@@ -30,7 +30,11 @@ class UserController extends Controller
 
     function destroy($id)
     {
-        User::destroy($id);
+        $deleted =   User::destroy($id);
+
+        if (!$deleted) {
+            return ApiResponse::error('user not found',404);
+        }
         return ApiResponse::success(null, 'user deleted successfully', 200);
     }
 

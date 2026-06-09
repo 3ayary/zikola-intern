@@ -18,6 +18,13 @@ class ProfileController extends Controller
     {
         $data = $req->validated();
 
+        if (Auth::user()->profile()->exists()) {
+
+            return ApiResponse::error('already has profile');
+        }
+
+
+
         if ($req->hasFile('avatar')) {
             $data['avatar'] = $req->file('avatar')->store('avatars', 'public');
         }
