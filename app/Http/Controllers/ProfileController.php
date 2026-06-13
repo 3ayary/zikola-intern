@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileRequest;
 use App\Http\Resources\ProfileResource;
-use App\Http\Responses\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use function App\Http\helpers\ApiResponse;
 
 class ProfileController extends Controller
 {
@@ -20,16 +20,14 @@ class ProfileController extends Controller
 
         if (Auth::user()->profile()->exists()) {
 
-            return ApiResponse::error('already has profile');
+            return ApiResponse('already has profile');
         }
-
-
 
         if ($req->hasFile('avatar')) {
             $data['avatar'] = $req->file('avatar')->store('avatars', 'public');
         }
         $profile = Auth::user()->profile()->create($data);
-        return ApiResponse::success(new ProfileResource($profile), 'profile created successfully', 201);
+        return ApiResponse(new ProfileResource($profile), 'profile created successfully', 201);
     }
 
     function update(ProfileRequest $req)
@@ -45,7 +43,7 @@ class ProfileController extends Controller
             $data['avatar'] = $req->file('avatar')->store('avatars', 'public');
         }
         $profile->update($data);
-        return ApiResponse::success(new ProfileResource($profile), 'profile updated successfully', 200);
+        return ApiResponse(new ProfileResource($profile), 'profile updated successfully', 200);
     }
     public function destroy()
     {
@@ -58,6 +56,6 @@ class ProfileController extends Controller
         }
 
         $profile->delete();
-        return ApiResponse::success(null, 'profile deleted successfully', 200);
+        return ApiResponse(null, 'profile deleted successfully', 200);
     }
 }

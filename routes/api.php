@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -23,6 +24,8 @@ Route::controller(ProductController::class)->prefix('products')->group(function 
     Route::post('/', 'store')->middleware(['auth:api', 'IsAdmin']);
     Route::delete('/{id}', 'destroy')->middleware(['auth:api', 'IsAdmin']);
     Route::put('/{id}', 'update')->middleware(['auth:api', 'IsAdmin']);
+    Route::post('/{category}/attach', 'attachProducts')->middleware(['auth:api', 'IsAdmin']);
+    Route::post('/{productId}/stock','restock')->middleware(['auth:api', 'IsAdmin']);
 });
 
 Route::controller(UserController::class)->prefix('user')->middleware(['auth:api', 'IsAdmin'])->group(function () {
@@ -44,11 +47,19 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/verify-email', 'verifyEmail')->middleware('auth:api');
     Route::post('/forgot-password', 'forgotPassword');
     Route::post('/reset-password', 'resetPassword');
-    Route::get('/me','me')->middleware('auth:api');
+    Route::get('/me', 'me')->middleware('auth:api');
 });
 
 Route::controller(ProfileController::class)->prefix('profile')->middleware(['auth:api', 'verified'])->group(function () {
     Route::post('/', 'store');
     Route::post('/update', 'update');
     Route::delete('/', 'destroy');
+});
+
+
+Route::controller(CategoryController::class)->prefix('category')->middleware('auth:api')->group(function () {
+    Route::post('/', 'store')->middleware('IsAdmin');;
+    Route::get('/', 'index');
+    Route::get('/{id}', 'show');
+    Route::delete('/{id}', 'destroy')->middleware('IsAdmin');;
 });

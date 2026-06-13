@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
-use App\Http\Responses\ApiResponse;
 use App\Models\Order;
-use App\Notifications\OrderStatusChanged;
-use App\Services\OrderService;
-
+use App\Services\orderServices\OrderService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+
+use function App\Http\helpers\ApiResponse;
 
 class OrderController extends Controller
 {
@@ -27,25 +26,25 @@ class OrderController extends Controller
     {
         $orders = $this->orderService->getOrdersList($this->pagination);
 
-        return ApiResponse::success($orders, 'get orders successfully', 200);  //data.data
+        return ApiResponse(OrderResource::collection($orders), 'get orders successfully', 200);
     }
 
     public function store(OrderRequest $req)
     {
         $order = $this->orderService->createOrder($req->products);
-        return ApiResponse::success(new OrderResource($order), 'order created successfully', 201);
+        return ApiResponse(new OrderResource($order), 'order created successfully', 201);
     }
 
     public function expensive()
     {
         $orders = Order::expensive()->with('products')->paginate($this->pagination);
-        return ApiResponse::success($orders, 'get expensive orders', 200); //data.data
+        return ApiResponse(OrderResource::collection($orders), 'get expensive orders', 200);
     }
 
     public function trashOrders()
     {
         $orders = Order::onlyTrashed()->paginate($this->pagination);
-        return ApiResponse::success($orders, 'get trashed orders successfully', 200); //data.data
+        return ApiResponse(OrderResource::collection($orders), 'get trashed orders successfully', 200);
     }
 
     public function destroy($id)
@@ -53,7 +52,7 @@ class OrderController extends Controller
         $order =  Order::findOrFail($id);
         $this->authorize('delete', $order);
         $order->delete();
-        return ApiResponse::success(null, 'deleted successfully', 200);
+        return ApiResponse(null, 'deleted successfully', 200);
     }
 
     public function updateStatus(Request $req, $id)
@@ -65,6 +64,6 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         $order->update(['status' => $req->status]);
 
-        return ApiResponse::success(new OrderResource($order), 'status updated successfully');
+        return ApiResponse(new OrderResource($order), 'status updated successfully');
     }
 }

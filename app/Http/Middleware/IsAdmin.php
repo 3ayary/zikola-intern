@@ -2,11 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Responses\ApiResponse;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+
+use function App\Http\helpers\ApiResponse;
 
 class IsAdmin
 {
@@ -18,7 +19,7 @@ class IsAdmin
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::user()->role !== 'admin') {
-            return ApiResponse::error('unauthorized', 403);
+            return ApiResponse(null,'unauthorized', 403);
         }
         return $next($request);
     }

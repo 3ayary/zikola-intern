@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProfileRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,9 @@ class ProfileRequest extends FormRequest
      */
     public function rules(): array
     {
-        return
-            [
-                'phone'   => 'nullable|string|max:20',
-                'address' => 'nullable|string|max:255',
-                'avatar'  => [
-                    'nullable',
-                    'image',
-                    'mimes:jpg,jpeg,png,webp',
-                    'max:5120',
-                ],
-            ];
+        return [
+            'parent_id'=>'nullable |exists:categories,id',
+            'name'=>'string|min:4'
+        ];
     }
 }
