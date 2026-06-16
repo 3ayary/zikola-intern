@@ -41,7 +41,7 @@ Route::controller(ReviewController::class)->prefix('products/{id}/reviews')->mid
 });
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('/login', 'login');
+    Route::post('/login', 'login')->middleware('throttle:login');
     Route::post('/register', 'register');
     Route::post('/logout', 'logout')->middleware('auth:api');
     Route::post('/verify-email', 'verifyEmail')->middleware('auth:api');

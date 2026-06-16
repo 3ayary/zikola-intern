@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Services\orderServices\OrderService;
+use App\Services\orderServices\CreateOrderService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -15,35 +15,35 @@ class OrderController extends Controller
 {
     use AuthorizesRequests;
 
-    protected OrderService $orderService;
+    private CreateOrderService $createOrderService;
 
-    public  function __construct(OrderService $orderService)
+    public  function __construct(CreateOrderService $createOrderService)
     {
-        $this->orderService = $orderService;
+        $this->createOrderService = $createOrderService;
     }
 
     public function index()
     {
-        $orders = $this->orderService->getOrdersList($this->pagination);
+        $orders = Order::select('id', 'user_id', 'total_price')->latest()->paginate($this->pagination);
 
         return ApiResponse(OrderResource::collection($orders), 'get orders successfully', 200);
     }
 
     public function store(OrderRequest $req)
     {
-        $order = $this->orderService->createOrder($req->products);
+        $order = $this->createOrderService->excute($req->products);
         return ApiResponse(new OrderResource($order), 'order created successfully', 201);
     }
 
     public function expensive()
     {
-        $orders = Order::expensive()->with('products')->paginate($this->pagination);
+        $orders = Order::expensive()->with('products')->latest()->paginate($this->pagination);
         return ApiResponse(OrderResource::collection($orders), 'get expensive orders', 200);
     }
 
     public function trashOrders()
     {
-        $orders = Order::onlyTrashed()->paginate($this->pagination);
+        $orders = Order::onlyTrashed()->latest()->paginate($this->pagination);
         return ApiResponse(OrderResource::collection($orders), 'get trashed orders successfully', 200);
     }
 

@@ -20,8 +20,8 @@ class ProductController extends Controller
 
         $products = Product::select('id', 'name', 'price', 'price_after_discount', 'sku', 'description', 'stock', 'category_id')->with(['category', 'images'])
             ->when($req->search, function ($query) use ($req) {
-                $query->where('name', 'like', '%' . $req->search . '%');
-            })->paginate($this->pagination);
+                $query->whereFullText(['name', 'description'], $req->search);
+            })->latest()->paginate($this->pagination);
 
         return ApiResponse(ProductResource::collection($products), 'get successfully', 200);
     }
@@ -92,16 +92,15 @@ class ProductController extends Controller
         return ApiResponse(ProductResource::collection($products), 'products attached to category successfully', 200);
     }
 
-    function restock(Request $req,$productId)
+    function restock(Request $req, $productId)
     {
         $req->validate([
             'stock' => 'required|integer|min:1'
         ]);
         $product = Product::findorFail($productId);
 
-        $product->increment('stock',$req->stock);
+        $product->increment('stock', $req->stock);
 
-        return ApiResponse(new ProductResource($product) , 'added new stock successfully', 200);
-
+        return ApiResponse(new ProductResource($product), 'added new stock successfully', 200);
     }
 }
