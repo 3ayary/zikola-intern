@@ -13,7 +13,7 @@ Route::controller(OrderController::class)->prefix('order')->middleware('auth:api
     Route::get('/', 'index')->middleware('IsAdmin');
     Route::post('/', 'store')->middleware('verified');
     Route::get('/expensive', 'expensive')->middleware('IsAdmin');
-    Route::get('/trash', 'trashOrders')->middleware('IsAdmin');
+    Route::get('/trash', 'trashOrders');
     Route::delete('/{id}', 'destroy')->middleware('verified');;  //admin or owner
     Route::put('/{id}/status', 'updateStatus')->middleware('IsAdmin');
 });
@@ -45,7 +45,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/register', 'register');
     Route::post('/logout', 'logout')->middleware('auth:api');
     Route::post('/verify-email', 'verifyEmail')->middleware('auth:api');
-    Route::post('/forgot-password', 'forgotPassword');
+    Route::post('/forgot-password', 'forgotPassword');  
     Route::post('/reset-password', 'resetPassword');
     Route::get('/me', 'me')->middleware('auth:api');
 });

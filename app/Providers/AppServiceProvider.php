@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Models\Order;
+use App\Models\User;
 use App\Observers\OrderObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,5 +37,10 @@ class AppServiceProvider extends ServiceProvider
 
 
         Order::observe(OrderObserver::class);
+
+        Gate::define('view-trashed-only', function (User $user) {
+            return $user->role === "admin";
+        });
+        
     }
 }

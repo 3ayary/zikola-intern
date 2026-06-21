@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Services\orderServices\CreateOrderService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 use function App\Http\helpers\ApiResponse;
 
@@ -43,6 +44,7 @@ class OrderController extends Controller
 
     public function trashOrders()
     {
+        Gate::authorize('view-trashed-only');
         $orders = Order::onlyTrashed()->latest()->paginate($this->pagination);
         return ApiResponse(OrderResource::collection($orders), 'get trashed orders successfully', 200);
     }
